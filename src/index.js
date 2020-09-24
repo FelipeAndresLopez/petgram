@@ -1,4 +1,19 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from 'react-apollo';
+import { App } from './App';
+import Context from './Context';
 
-ReactDOM.render(<h1>Hello</h1>, document.getElementById('app'))
+const client = new ApolloClient({
+  uri: 'https://petgram-server-felipe.felipeandreslopez.vercel.app/graphql'
+});
+
+ReactDOM.render(
+  <Context.Provider>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+  </Context.Provider>,
+  document.getElementById('app')
+);
