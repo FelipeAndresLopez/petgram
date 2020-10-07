@@ -1,5 +1,5 @@
-import React from 'react';
-import { Router } from '@reach/router';
+import React, { useContext } from 'react';
+import { Router, Redirect } from '@reach/router';
 
 import { GlobalStyle } from './styles/GlobalStyles';
 import { Logo } from './components/Logo';
@@ -9,37 +9,28 @@ import { Favs } from './pages/Favs';
 import { User } from './pages/User';
 import { NotRegisteredUser } from './pages/NotRegisteredUser';
 import { NavBar } from './components/Navbar';
-import Context from './Context';
+import { Context } from './Context';
+import { NotFound } from './pages/NotFound';
 
-export const App = () => (
-  <div>
-    <GlobalStyle />
-    <Logo />
-    <Router>
-      <Home path="/" />
-      <Home path="/pet/:categoryId" />
-      <Detail path="/detail/:detailId" />
-    </Router>
-
-    <Context.Consumer>
-      {
-        ({ isAuth }) => (isAuth
-          ? (
-            <Router>
-              <Favs path="/favs" />
-              <User path="/user" />
-            </Router>
-          )
-          : (
-            <Router>
-              <NotRegisteredUser path="/user" />
-              <NotRegisteredUser path="/favs" />
-            </Router>
-          )
-        )
-      }
-
-    </Context.Consumer>
-    <NavBar />
-  </div>
-);
+export const App = () => {
+  const { isAuth } = useContext(Context);
+  return (
+    <div>
+      <GlobalStyle />
+      <Logo />
+      <Router>
+        <NotFound default />
+        <Home path="/" />
+        <Home path="/pet/:categoryId" />
+        <Detail path="/detail/:detailId" />
+        {!isAuth && <NotRegisteredUser path="/login" />}
+        {!isAuth && <Redirect from="/favs" to="/login" />}
+        {!isAuth && <Redirect from="/user" to="/login" />}
+        {isAuth && <Redirect from="/login" to="/" />}
+        <Favs path="/favs" />
+        <User path="/user" />
+      </Router>
+      <NavBar />
+    </div>
+  );
+};
